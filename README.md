@@ -1,358 +1,148 @@
-# خطة التنفيذ الشاملة لبرنامج مراقبة البطارية (نسخة معدلة ومفصلة)
+# Smart Battery Tool v3.0
 
-## 1. المقدمة
+**Internal Version:** 1  
+**Last Modified:** June 30, 2025  
+**Author:** Ahmed Saleh  
 
-تهدف هذه الخطة إلى توجيه عملية تطوير برنامج مراقبة البطارية، مع الأخذ في الاعتبار الهيكل الحالي للواجهة الأمامية (HTML/CSS/JS) والوظائف الأساسية الموجودة في الكود المرفق. ستركز الخطة على إعادة بناء البرنامج من الصفر مع الاستفادة من التصميم والتقسيم المعماري الحالي، ودمج واجهة 'Battery Info' الجديدة كواجهة رئيسية، وتكييف الواجهة لتناسب تصميمًا جديدًا بأبعاد 600x800 بكسل، وشريط علوي أسود، وشريط جانبي مع تبويبات محددة، مع الإشارة إلى أن البرنامج سيكون مستطيلًا أفقيًا (Landscape) ليتناسب مع واجهة الكمبيوتر. الأهم من ذلك، ستركز هذه الخطة بشكل مكثف على **فصل الطبقات (Layer Separation)** لضمان سهولة التحديث والصيانة المستمرة، بالإضافة إلى تفصيل آلية تفعيل الأزرار ديناميكيًا بناءً على الشريحة المحددة.
+## Overview
 
-## 2. الهيكل المعماري المقترح: التركيز على فصل الطبقات
+Smart Battery Tool is a comprehensive battery monitoring and management application designed for professional use. The application provides advanced diagnostics, real-time monitoring, and battery health analysis capabilities through a modern web-based interface.
 
-سيتبع البرنامج هيكلًا هجينًا، مبنيًا على مبادئ فصل الاهتمامات (Separation of Concerns) لضمان المرونة وقابلية التوسع:
+## Features
 
-*   **الواجهة الخلفية (Backend - C# Application):**
-    *   **المسؤولية:** التفاعل المباشر مع الأجهزة (محولات CP2112/EV2300)، قراءة وكتابة البيانات من وإلى شرائح البطارية، ومعالجة البيانات الأولية. ستوفر هذه الطبقة واجهة برمجة تطبيقات (API) نظيفة ومحددة جيدًا للواجهة الأمامية.
-    *   **الاستقلالية:** هذه الطبقة مستقلة تمامًا عن تفاصيل الواجهة الأمامية (HTML/CSS/JS). يمكن تحديثها أو استبدالها دون التأثير على الواجهة الأمامية طالما أن الـ API يظل متوافقًا.
+- **Real-time Battery Monitoring**: Live display of charge status, voltage, current, and temperature
+- **Advanced Diagnostic Tools**: Memory editor, core functions, and comprehensive logging
+- **Battery Health Analysis**: Detailed health metrics and status indicators
+- **Data Export**: Export battery data in JSON format for analysis
+- **Multiple Adapter Support**: Compatible with CP2112 and EV2300 adapters
+- **Professional Interface**: Clean, responsive design optimized for 800x600 resolution
 
-*   **طبقة الربط (API Bridge - JavaScript):**
-    *   **المسؤولية:** تعمل كوسيط بين الواجهة الأمامية (JavaScript) والواجهة الخلفية (C#). تقوم بتحويل طلبات الواجهة الأمامية إلى أوامر تفهمها الواجهة الخلفية، والعكس صحيح.
-    *   **الاستقلالية:** هذه الطبقة تفصل بين منطق الواجهة الأمامية ومنطق الواجهة الخلفية. أي تغيير في طريقة تواصل WebView2 مع C# يمكن معالجته هنا دون التأثير على بقية كود الواجهة الأمامية.
+## System Requirements
 
-*   **الواجهة الأمامية (Frontend - HTML, CSS, JavaScript):**
-    *   **نمط 'الغلاف + الواجهات' (Shell + Views):**
-        *   **الغلاف (Shell - SmartBatteryTool.html, style.css, main.js):**
-            *   **المسؤولية:** يوفر الهيكل الأساسي للبرنامج (شريط العنوان، الشريط الجانبي، منطقة المحتوى الرئيسية، التذييل). يحتوي على المنطق العام للتنقل بين الواجهات وتحميلها. `style.css` سيتعامل مع التصميم العام للغلاف والألوان والأبعاد الثابتة (600x800).
-            *   **الاستقلالية:** هذا الغلاف ثابت ولا يتغير كثيرًا. أي تعديل في واجهة معينة (View) لن يؤثر على الغلاف أو الواجهات الأخرى.
-        *   **الواجهات (Views - battery_info.html/css/js, advanced_tools_view.html/css/js, etc.):**
-            *   **المسؤولية:** كل واجهة (مثل Battery Info, Advanced Tools) هي وحدة مستقلة تمامًا تتكون من ملف HTML لهيكلها، وملف CSS لتصميمها الخاص، وملف JavaScript لمنطقها التفاعلي. هذه الواجهات تُحمّل ديناميكيًا داخل منطقة المحتوى الرئيسية في الغلاف.
-            *   **الاستقلالية:** التعديل في واجهة 'Battery Info' لن يؤثر على واجهة 'Advanced Tools' أو أي واجهة أخرى. كل واجهة مسؤولة عن عرض بياناتها والتفاعل مع المستخدم ضمن نطاقها الخاص.
+- **Operating System**: Windows, macOS, or Linux
+- **Python**: Version 3.6 or higher
+- **Web Browser**: Modern browser with JavaScript support
+- **Screen Resolution**: Minimum 800x600 pixels
+- **Network**: Local network access for HTTP server
 
-*   **طبقة منطق الشرائح (Chips Logic - chips/*.js):**
-    *   **المسؤولية:** تحتوي على المنطق الخاص بكل نوع من أنواع شرائح البطاريات (مثال: bq40xxx.js, bq30z5xx.js). تتضمن تعريف الأوامر الخاصة بالشريحة، وكيفية تفسير البيانات منها، وكيفية التفاعل مع الواجهة الأمامية لتفعيل الأزرار الخاصة بها.
-    *   **الاستقلالية:** كل ملف شريحة مستقل تمامًا عن الآخر. إضافة دعم لشريحة جديدة أو تحديث منطق شريحة موجودة لا يتطلب تعديل أي جزء آخر من الكود باستثناء ملف الشريحة نفسه (وربما تحديث قائمة الشرائح المتاحة في الواجهة).
+## Installation
 
-## 3. آلية تفعيل الأزرار الديناميكية في قسم Core & EEPROM Functions
+1. Extract the application files to your desired directory
+2. Ensure Python 3 is installed on your system
+3. Run the appropriate launch script:
+   - **Linux/macOS**: `./run.sh`
+   - **Windows**: `run.bat`
 
-**فهمي للآلية المقترحة:**
+## Usage
 
-في الإصدار القديم، كانت الأزرار تُنشأ ديناميكيًا بواسطة ملف JavaScript الخاص بالشريحة. الفكرة الجديدة هي تحسين هذه العملية لضمان استقرار الواجهة وسهولة التحديث، وذلك عن طريق:
+### Starting the Application
 
-1.  **الأزرار الثابتة والمخفية (Predefined, Hidden Buttons):**
-    *   في ملف `advanced_tools_view.html` (أو ملف الواجهة الذي يحتوي على قسم Core & EEPROM Functions)، سيتم تعريف جميع الأزرار المحتملة التي قد تحتاجها أي شريحة. هذه الأزرار ستكون موجودة في HTML بشكل ثابت، ولكنها ستكون مخفية افتراضيًا باستخدام CSS (مثال: `display: none;` أو `visibility: hidden;`).
-    *   كل زر سيكون له `id` فريد وواضح يعكس وظيفته (مثال: `id=
+1. Navigate to the application directory
+2. Run the launch script for your operating system
+3. The application will start a local HTTP server
+4. Open your web browser and navigate to `http://localhost:8080`
 
+### Interface Overview
 
-```html
-<button id="unseal-chip-button" style="display: none;">Unseal Chip</button>
-<button id="seal-chip-button" style="display: none;">Seal Chip</button>
-<button id="clear-errors-button" style="display: none;">Clear Errors</button>
-<!-- ... وهكذا لبقية الأزرار المحتملة ... -->
+The application features a layered architecture with separated components:
+
+- **Top Bar**: Contains application title, version, adapter selection, and connection controls
+- **Sidebar**: Navigation tabs for different application views
+- **Main Content Area**: Dynamic content based on selected view
+- **Footer**: Developer information and credits
+
+### Available Views
+
+1. **Info**: Real-time battery information and status
+2. **Advanced**: Diagnostic tools, memory editor, and logging
+3. **Charge**: Battery charging and discharge controls (under development)
+4. **Calibration**: Battery calibration tools (under development)
+5. **Settings**: Application preferences (under development)
+6. **About**: Application information and version details
+
+## Architecture
+
+The application follows a layered architecture design:
+
+- **Presentation Layer**: HTML/CSS/JavaScript frontend
+- **API Bridge Layer**: Communication interface with backend systems
+- **View Layer**: Modular view components for different features
+- **Utility Layer**: Shared functions and helpers
+
+## File Structure
+
+```
+smart-battery-tool/
+├── index.html              # Main application file
+├── run.sh                  # Linux/macOS launch script
+├── run.bat                 # Windows launch script
+├── css/                    # Stylesheets
+│   ├── main.css           # Main application styles
+│   ├── battery-info.css   # Battery info view styles
+│   └── advanced-tools.css # Advanced tools view styles
+├── js/                     # JavaScript files
+│   ├── main.js            # Main application logic
+│   ├── api-bridge.js      # API communication bridge
+│   ├── battery-info.js    # Battery info view logic
+│   └── advanced-tools.js  # Advanced tools view logic
+├── views/                  # HTML view templates
+│   ├── battery-info.html  # Battery information view
+│   ├── advanced-tools.html # Advanced tools view
+│   ├── charge-discharge.html # Charge/discharge view
+│   ├── calibration.html   # Calibration view
+│   ├── settings.html      # Settings view
+│   └── about.html         # About view
+├── assets/                 # Application assets
+│   └── battery-icon.png   # Application icon
+└── docs/                   # Documentation files
 ```
 
-2.  **ملف JavaScript الخاص بالشريحة (e.g., `bq40xxx.js`):**
-    *   عندما يتم تحديد شريحة معينة (مثلاً BQ40XXX) والاتصال بها، سيتم تحميل ملف JavaScript الخاص بها (`bq40xxx.js`).
-    *   بدلاً من إنشاء الأزرار من الصفر، سيقوم هذا الملف بالبحث عن الأزرار الثابتة الموجودة في DOM باستخدام `id` الخاص بها.
-    *   سيقوم ملف الشريحة بتفعيل (إظهار) الأزرار التي تدعمها هذه الشريحة فقط، وتعيين معالجات الأحداث (event listeners) لها.
-    *   **مثال:** إذا كانت شريحة BQ40XXX تدعم وظيفتي "Unseal" و "Seal Chip"، فسيقوم `bq40xxx.js` بما يلي:
-        ```javascript
-        document.getElementById('unseal-chip-button').style.display = 'block'; // أو 'inline-block'
-        document.getElementById('unseal-chip-button').onclick = function() { api.sendUnsealCommand(); };
-
-        document.getElementById('seal-chip-button').style.display = 'block';
-        document.getElementById('seal-chip-button').onclick = function() { api.sendSealCommand(); };
-
-        // إخفاء أي أزرار أخرى لا تدعمها هذه الشريحة (للتأكد)
-        // document.getElementById('some-other-button').style.display = 'none';
-        ```
-
-3.  **التعامل مع الأزرار الإضافية أو المتغيرة:**
-    *   إذا كانت شريحة معينة تتطلب زرًا فريدًا تمامًا غير موجود في القائمة الثابتة، يمكن لملف JavaScript الخاص بها أن يقوم بإنشاء هذا الزر ديناميكيًا وإضافته إلى القسم المحدد. ومع ذلك، يفضل تقليل هذا السيناريو قدر الإمكان للحفاظ على بساطة الواجهة.
-    *   إذا كانت شريحة تحتاج إلى تغيير نص زر موجود أو وظيفته، يمكن لملف JavaScript الخاص بها تعديل `textContent` أو `onclick` الخاص بالزر الثابت بعد إظهاره.
-
-**المزايا الرئيسية لهذه الآلية:**
-
-*   **استقرار الواجهة:** لا يوجد تغيير في هيكل DOM الأساسي عند تبديل الشرائح، مما يقلل من مخاطر الأخطاء البصرية أو مشاكل التخطيط.
-*   **سهولة التحديث:** إضافة شريحة جديدة أو تعديل شريحة موجودة يتطلب فقط تعديل ملف JavaScript الخاص بها، دون الحاجة لتعديل ملف HTML الرئيسي للواجهة.
-*   **أداء أفضل:** تجنب إعادة إنشاء عناصر DOM بشكل متكرر.
-*   **وضوح الكود:** فصل منطق الواجهة (HTML) عن منطق الشريحة (JavaScript).
-
-## 4. مراحل التنفيذ (مراجعة وتفصيل)
-
-### المرحلة 4.1: إعداد بيئة التطوير والواجهة الخلفية (C# Backend)
-
-**الهدف:** إعداد بيئة التطوير وتطوير الواجهة الخلفية الأساسية للتعامل مع الاتصال بالبطارية وتوفير API للواجهة الأمامية، مع التركيز على فصل المسؤوليات.
-
-**الخطوات:**
-
-1.  **إعداد المشروع:**
-    *   إنشاء مشروع C# جديد (Windows Forms App أو WPF App) في Visual Studio.
-    *   تثبيت حزمة Microsoft.Web.WebView2 NuGet للتحكم في عرض الويب.
-    *   تحديد أبعاد النافذة الرئيسية لتكون 600 بكسل عرضًا و 800 بكسل ارتفاعًا، مع التأكد من أن الواجهة مستطيلة أفقيًا.
-2.  **تطوير طبقة الاتصال (Hardware Abstraction Layer - HAL):**
-    *   **المسؤولية:** هذه الطبقة هي المسؤولة الوحيدة عن التفاعل المباشر مع الأجهزة (CP2112/EV2300). يجب أن تكون مستقلة تمامًا عن منطق الأعمال أو الواجهة الأمامية.
-    *   تحديد المكتبات أو SDKs المطلوبة للتفاعل مع CP2112 و EV2300. إذا لم تكن متوفرة، قد يتطلب الأمر بحثًا إضافيًا أو تطوير برامج تشغيل مخصصة. يجب أن تكون هذه المكتبات مغلفة داخل هذه الطبقة.
-    *   إنشاء فئات (Classes) مجردة (Interfaces) لتمثيل المحولات (Adapters) وشرائح البطارية، ثم تنفيذها لفئات محددة (مثال: `CP2112Adapter`, `EV2300Adapter`).
-    *   توفير وظائف عامة مثل `Connect()`, `Disconnect()`, `ReadBytes(address, count)`, `WriteBytes(address, data)`.
-3.  **تطوير طبقة منطق الأعمال (Business Logic Layer - BLL):**
-    *   **المسؤولية:** تحتوي على المنطق الخاص بكيفية التفاعل مع البيانات التي تم قراءتها من البطارية، وتطبيق القواعد الخاصة بالبطاريات الذكية (مثل حسابات السعة، قراءة السجلات، إلخ). هذه الطبقة تتفاعل مع طبقة HAL ولا تعرف شيئًا عن الواجهة الأمامية.
-    *   إنشاء فئات تمثل البطارية وخصائصها (مثال: `Battery`, `BatteryInfo`, `BatteryStatus`).
-    *   توفير وظائف مثل `ReadFullBatteryInfo()`, `CalculateRemainingCapacity()`, `ParseLogData()`.
-4.  **تطوير طبقة API الواجهة الخلفية (API Layer):**
-    *   **المسؤولية:** تعمل كنقطة دخول للواجهة الأمامية. تقوم بتحويل طلبات الواجهة الأمامية إلى استدعاءات لطبقة منطق الأعمال وطبقة HAL، ثم تعيد النتائج إلى الواجهة الأمامية.
-    *   إنشاء واجهة برمجة تطبيقات (API) داخل تطبيق C# للسماح للواجهة الأمامية (JavaScript) بالتواصل مع الواجهة الخلفية.
-    *   استخدام `CoreWebView2.WebMessageReceived` في C# لاستقبال الرسائل من JavaScript.
-    *   استخدام `CoreWebView2.PostWebMessageAsString` أو `CoreWebView2.PostWebMessageAsJson` في C# لإرسال الردود إلى JavaScript.
-    *   تضمين وظائف API التي تعكس الأوامر المطلوبة من الواجهة الأمامية، مثل:
-        *   `refreshAdapters`: تستدعي وظائف من HAL للبحث عن المحولات المتاحة.
-        *   `connectAdapter`: تستدعي وظائف من HAL للاتصال بمحول محدد.
-        *   `readBattery`: تستدعي وظائف من BLL و HAL لقراءة البيانات الأساسية للبطارية.
-        *   `unsealChip`, `sealChip`, `clearErrors`, `readChipInfo`, `readEEPROM`, `writeEEPROM`, `saveToFile`, `loadFromFile`, `parseLog`, `writeData`: تستدعي وظائف مناسبة من BLL و HAL.
-
-**المخرجات:** مشروع C# قابل للتشغيل مع WebView2، وواجهة خلفية مقسمة إلى طبقات (HAL, BLL, API Layer) لضمان فصل المسؤوليات، مع تحديد الأبعاد الأولية للنافذة.
-
-### المرحلة 4.2: بناء الغلاف الرئيسي للواجهة الأمامية (Shell) وتكييفه
-
-**الهدف:** بناء ملف `SmartBatteryTool.html` كغلاف رئيسي للواجهة الأمامية، مع دمج شريط العنوان وأزرار التحكم الأساسية، وتكييفه ليناسب التصميم الجديد (شريط علوي أسود، شريط جانبي، أبعاد 600x800)، مع ضمان استقلالية المكونات.
-
-**الخطوات:**
-
-1.  **إنشاء `SmartBatteryTool.html`:**
-    *   نسخ الهيكل الأساسي لـ `SmartBatteryTool.html` من الكود الحالي.
-    *   **تعديل شريط العنوان (`<header>`):**
-        *   جعله باللون الأسود (`background-color: black;`).
-        *   تضمين اسم البرنامج: "Smart Battery Tool".
-        *   تضمين قائمة اختيار المحول (Adapter Select) مثل CP2112 و EV2300. يرجي اضافه زر ريفرش بجانب الادابتور لتحديث الادابتورات المتصله . 
-        *   تضمين أزرار الاتصال (Connect) والتحديث (Refresh).
-        *   تضمين حالة البطارية (Battery Status) مثل "Battery Connected" أو "Disconnected".
-    *   **تضمين الشريط الجانبي الأيسر (`<aside>` أو `<div>` مخصص):**
-        *   تضمين شعار واسم البرنامج "Smart Battery Tool" وإصداره.
-        *   إضافة أزرار التنقل الرئيسية (تبويبات) بالترتيب والأسماء الإنجليزية التالية:
-            *   `Battery Info`
-            *   `Advanced Tools`
-            *   `Charge & Discharge`
-            *   `Calibration`
-            *   `Settings`
-            *   `About`
-        *   كل زر تبويب يجب أن يكون له `id` فريد (مثال: `id="tab-battery-info"`) ومعالج حدث (event listener) في `main.js` لتحميل الواجهة المقابلة.
-    *   تضمين حاوية المحتوى الرئيسية (`<main id="main-view-container">`) التي ستستضيف الواجهات الديناميكية، مع التأكد من أنها تتناسب مع الأبعاد الكلية للنافذة بعد تخصيص مساحة للشريط العلوي والشريط الجانبي.
-    *   تضمين تذييل (`<footer>`) يحتوي على "Coded by: Ahmed Saleh".
-2.  **تضمين ملفات CSS و JavaScript:**
-    *   ربط ملف `style.css` (الخاص بالتصميم العام، مع تحديثه ليتناسب مع الألوان والأبعاد الجديدة). هذا الملف يجب أن يحتوي فقط على الأنماط العامة للغلاف والعناصر المشتركة، وليس أنماط الواجهات الفردية.
-    *   ربط ملف `api_bridge.js` (للتواصل مع الواجهة الخلفية C#).
-    *   ربط ملف `main.js` (للمنطق العام للواجهة الأمامية، بما في ذلك تحميل الواجهات والتعامل مع التبويبات الجانبية). `main.js` سيكون مسؤولاً عن:
-        *   تهيئة الواجهة عند التحميل.
-        *   التعامل مع أحداث شريط العنوان (Connect, Refresh).
-        *   التعامل مع أحداث التبويبات الجانبية وتحميل الواجهات المقابلة ديناميكيًا.
-        *   توفير وظائف عامة لتسجيل الرسائل (logging) التي يمكن للواجهات الأخرى استخدامها.
-3.  **تفعيل وظائف الاتصال الأساسية:**
-    *   توصيل أزرار الاتصال والتحديث في `main.js` بوظائف `api_bridge.js` لإرسال الأوامر إلى الواجهة الخلفية.
-    *   تحديث حالة البطارية في شريط العنوان بناءً على الردود من الواجهة الخلفية.        
-
-**المخرجات:** غلاف HTML و CSS و JavaScript يعمل، مصمم وفقًا للمواصفات الجديدة، قادر على الاتصال بالواجهة الخلفية وعرض الأجزاء الثابتة من الواجهة، مع تبويبات جانبية جاهزة للتفاعل، ومبني على مبدأ فصل الاهتمامات.
-
-### المرحلة 4.3: تطوير واجهة Battery Info (الواجهة الرئيسية الجديدة)
-
-**الهدف:** تطوير واجهة Battery Info كواجهة رئيسية جديدة تركز على التشخيص السريع، وفقًا للمواصفات الفنية الشاملة، وتكييفها لتناسب منطقة المحتوى الرئيسية الجديدة، مع ضمان استقلاليتها.
-
-**الخطوات:**
-
-1.  **فصل مكونات Prototype:**
-    *   إنشاء ملف `views/battery_info.html` يحتوي على هيكل الشبكة (2x2) للبطاقات المعلوماتية. هذا الملف يجب أن يحتوي فقط على هيكل HTML الخاص بالواجهة، بدون أي أنماط `<style>` أو منطق `<script>` داخلي.
-    *   إنشاء ملف `css/battery_info.css` يحتوي على جميع قواعد التنسيق الخاصة بهذه الواجهة. هذا الملف سيتم تحميله ديناميكيًا عند تحميل الواجهة.
-    *   إنشاء ملف `js/battery_info.js` يحتوي على المنطق البرمجي الخاص بتحديث البطاقات وعرض البيانات. هذا الملف سيتم تحميله ديناميكيًا عند تحميل الواجهة.
-2.  **دمج الواجهة في الغلاف:**
-    *   تعديل `main.js` ليقوم بتحميل `views/battery_info.html` داخل `<main id="main-view-container">` عند بدء التشغيل (كواجهة افتراضية) أو عند النقر على تبويب Battery Info في الشريط الجانبي.
-    *   عند تحميل `battery_info.html`، يجب على `main.js` أيضًا التأكد من تحميل `css/battery_info.css` و `js/battery_info.js`.
-    *   يجب أن يكون `battery_info.js` قادرًا على الوصول إلى وظائف `api_bridge.js` لإرسال طلبات البيانات إلى الواجهة الخلفية وتلقي الردود.
-3.  **تصميم البطاقات:**
-    *   تصميم أربع بطاقات معلوماتية رئيسية (مثال: حالة الشحن، الصحة، الجهد، درجة الحرارة) مع مؤشرات بصرية واضحة.
-    *   ضمان أن الواجهة محتواة بالكامل داخل منطقة المحتوى الرئيسية المخصصة لها، وأنها تستجيب بشكل صحيح للأبعاد المتاحة.
-
-**المخرجات:** واجهة Battery Info وظيفية، تعرض بيانات البطارية بشكل واضح كواجهة رئيسية، ومتكاملة مع التصميم الجديد، ومبنية بشكل مستقل.
-
-### المرحلة 4.4: تكييف واجهة Advanced Tools (الواجهة الثانوية)
-
-**الهدف:** تكييف الواجهة القديمة ذات الثلاثة أعمدة لتصبح واجهة ثانوية (Advanced Tools) يمكن الوصول إليها عبر تبويب، وتكييفها لتناسب منطقة المحتوى الرئيسية الجديدة، مع تطبيق آلية الأزرار الديناميكية الجديدة.
-
-**الخطوات:**
-
-1.  **إنشاء `views/advanced_tools_view.html`:**
-    *   نسخ تصميم الأعمدة الثلاثة (السجل الرئيسي، السجل السريع، محرر الذاكرة) من الكود الحالي إلى هذا الملف.
-    *   **تعديل قسم Core & EEPROM Functions:**
-        *   إضافة جميع الأزرار المحتملة بشكل ثابت في HTML، مع جعلها مخفية افتراضيًا باستخدام CSS (مثال: `style="display: none;"`).
-        *   كل زر يجب أن يكون له `id` فريد وواضح (مثال: `id="unseal-chip-button"`).
-    *   هذا الملف يجب أن يحتوي فقط على هيكل HTML، بدون أنماط أو منطق داخلي.
-2.  **إنشاء `css/advanced_tools_view.css`:**
-    *   يحتوي على جميع قواعد التنسيق الخاصة بهذه الواجهة، بما في ذلك الأنماط الأولية للأزرار المخفية.
-3.  **إنشاء `js/advanced_tools_ui.js`:**
-    *   يحتوي على المنطق البرمجي الخاص بهذه الواجهة.
-    *   عند تحميل الواجهة، يقوم هذا الملف بتهيئة عناصر الواجهة.
-    *   يجب أن يكون مسؤولاً عن تحميل ملف JavaScript الخاص بالشريحة المحددة (مثال: `chips/bq40xxx.js`).
-    *   يجب أن يوفر وظيفة (callback) لملف الشريحة لتفعيل الأزرار المطلوبة.
-4.  **تعديل `main.js`:**
-    *   إضافة منطق للتبديل بين واجهة Battery Info وواجهة Advanced Tools (وغيرها من التبويبات الجديدة) عند النقر على التبويبات في الشريط الجانبي.
-    *   تحميل `views/advanced_tools_view.html` و `css/advanced_tools_view.css` و `js/advanced_tools_ui.js` داخل `<main id="main-view-container">` عند التبديل إلى تبويب Advanced Tools.
-
-**المخرجات:** واجهة Advanced Tools وظيفية، يمكن التبديل إليها وعرض وظائف الشرائح المتقدمة، ومتكاملة مع التصميم الجديد، وتطبق آلية الأزرار الديناميكية الجديدة.
-
-### المرحلة 4.5: تطوير واجهات التبويبات الجديدة (Charge & Discharge, Calibration, Settings, About)
+## Development Guidelines
 
-**الهدف:** تطوير الواجهات الجديدة للتبويبات المضافة في الشريط الجانبي، مع ضمان استقلالية كل واجهة.
-
-**الخطوات:**
-
-1.  **لكل تبويب (`Charge & Discharge`, `Calibration`, `Settings`, `About`):**
-    *   إنشاء مجلد خاص به داخل `views/` (مثال: `views/charge_discharge/`).
-    *   داخل كل مجلد، إنشاء ملف HTML (مثال: `views/charge_discharge/index.html`) يحتوي على هيكل الواجهة فقط.
-    *   إنشاء ملف CSS (مثال: `css/charge_discharge.css`) يحتوي على أنماط الواجهة فقط.
-    *   إنشاء ملف JavaScript (مثال: `js/charge_discharge.js`) يحتوي على منطق الواجهة فقط.
-    *   سيتم تصميم هذه الواجهات لتناسب منطقة المحتوى الرئيسية.
-2.  **دمج الواجهات في الغلاف:**
-    *   تعديل `main.js` لتحميل ملف HTML المناسب (و CSS و JS المرتبطين به) داخل `<main id="main-view-container">` عند النقر على التبويب المقابل في الشريط الجانبي.
-3.  **تطوير الوظائف الخاصة بكل تبويب:**
-    *   **Charge & Discharge:** واجهة للتحكم في عمليات الشحن والتفريغ، مع عرض البيانات ذات الصلة. ستتفاعل مع الواجهة الخلفية عبر `api_bridge.js`.
-    *   **Calibration:** واجهة لوظائف معايرة البطارية. ستتفاعل مع الواجهة الخلفية عبر `api_bridge.js`.
-    *   **Settings:** واجهة لإعدادات البرنامج العامة (مثل تفضيلات الاتصال، خيارات التسجيل). قد لا تتطلب تفاعلاً مباشرًا مع الواجهة الخلفية للبطارية.
-    *   **About:** واجهة لعرض معلومات حول البرنامج، الإصدار، وحقوق النشر (بما في ذلك "Coded by: Ahmed Saleh"). هذه الواجهة ستكون ثابتة إلى حد كبير.
+### Version Control
 
-**المخرجات:** جميع الواجهات الرئيسية للبرنامج مطورة ومدمجة، ويمكن التنقل بينها بسلاسة، وكل واجهة مستقلة عن الأخرى.
+- **Main Version**: Starts from v3.0
+- **Internal Version**: Incremental numbering starting from 1
+- **Bug Fixes**: Increment by 0.01 (e.g., 1.00 → 1.01)
+- **Major Updates**: Increment by 0.1 (e.g., 1.01 → 1.1)
 
-### المرحلة 4.6: تطوير منطق الشرائح (Chips Logic)
+### Code Standards
 
-**الهدف:** تطوير أو تكييف ملفات JavaScript الخاصة بالشرائح لتوفير الوظائف المحددة لكل نوع شريحة، وتطبيق آلية تفعيل الأزرار الجديدة.
+- All code comments and documentation must be in English
+- Each code file must include internal version number
+- Follow layered architecture principles
+- Maintain separation between top bar and navigation tabs
 
-**الخطوات:**
+### File Naming
 
-1.  **تحليل ملفات الشرائح الحالية:**
-    *   فحص `chips/bq40xxx.js` و `chips/bq30z5xx.js` لفهم كيفية تعريف الأوامر والوظائف الخاصة بالشريحة.
-2.  **توسيع وظائف الشرائح وتكييفها مع الآلية الجديدة:**
-    *   لكل ملف شريحة (مثال: `chips/bq40xxx.js`):
-        *   يجب أن يحتوي على كائن أو دالة تقوم بتعريف الأوامر والوظائف التي تدعمها هذه الشريحة.
-        *   يجب أن يتلقى كمعامل (parameter) مرجعًا إلى عنصر DOM الذي يحتوي على الأزرار، أو قائمة بـ `id`s الأزرار التي يجب تفعيلها.
-        *   يقوم بتفعيل (إظهار) الأزرار الثابتة الموجودة في `advanced_tools_view.html` والتي تدعمها هذه الشريحة فقط.
-        *   يقوم بتعيين معالجات الأحداث (event listeners) لهذه الأزرار، والتي بدورها تستدعي وظائف `api_bridge.js` لإرسال الأوامر الفعلية إلى الواجهة الخلفية.
-        *   إذا كانت هناك حاجة لزر فريد تمامًا، يمكن لملف الشريحة إنشاءه ديناميكيًا وإضافته، ولكن يفضل تجنب ذلك.
-3.  **إدارة تحميل الشرائح:**
-    *   `js/advanced_tools_ui.js` سيكون مسؤولاً عن تحديد نوع الشريحة المتصلة (ربما عن طريق استدعاء API من الواجهة الخلفية) ثم تحميل ملف JavaScript المناسب من مجلد `chips/`.
-    *   قبل تحميل ملف شريحة جديد، يجب على `advanced_tools_ui.js` إخفاء جميع الأزرار في قسم Core & EEPROM Functions لضمان عدم ظهور أزرار غير ذات صلة.
+- All files must include version numbers in documentation
+- Update version numbers with each modification
+- Maintain consistent naming conventions
 
-**المخرجات:** ملفات JavaScript للشرائح توفر الوظائف المحددة لكل نوع شريحة، وتتفاعل مع الواجهة الخلفية، وتطبق آلية تفعيل الأزرار الديناميكية الجديدة بكفاءة.
+## Troubleshooting
 
-### المرحلة 4.7: تحسينات وتصحيح الأخطاء والاختبار
+### Common Issues
 
-**الهدف:** تحسين أداء البرنامج، تصحيح الأخطاء، وإجراء اختبارات شاملة لضمان الاستقرار والوظائف الصحيحة، مع التركيز على استقلالية الطبقات.
+1. **Port Already in Use**: The launch script will automatically find an available port
+2. **Python Not Found**: Ensure Python 3 is installed and in your system PATH
+3. **Files Missing**: Verify all application files are present in the directory
+4. **Browser Compatibility**: Use a modern browser with JavaScript enabled
 
-**الخطوات:**
+### Error Messages
 
-1.  **تحسين الأداء:**
-    *   تحسين تحميل الواجهات والبيانات لضمان استجابة سريعة.
-    *   إدارة الذاكرة والموارد بشكل فعال، خاصة في الواجهة الخلفية (C#) وفي تحميل/إلغاء تحميل الواجهات والشرائح في الواجهة الأمامية.
-2.  **تصحيح الأخطاء (Debugging):**
-    *   استخدام أدوات تصحيح الأخطاء في Visual Studio (لـ C#) وأدوات المطور في المتصفح (لـ HTML/CSS/JS) لتحديد وإصلاح المشاكل.
-    *   التركيز على تتبع تدفق البيانات بين الطبقات المختلفة (C# Backend -> API Bridge -> Frontend Views -> Chip Logic) لضمان التوافق.
-3.  **الاختبار:**
-    *   **اختبار الوحدة (Unit Testing):** اختبار كل مكون على حدة (مثال: وظائف API في C#, وظائف JavaScript للشرائح، منطق تحميل الواجهات في `main.js`).
-    *   **اختبار التكامل (Integration Testing):** اختبار التفاعل بين الواجهة الأمامية والخلفية، وبين الواجهات المختلفة، والتأكد من أن آلية الأزرار الديناميكية تعمل بشكل صحيح.
-    *   **اختبار النظام (System Testing):** اختبار البرنامج بالكامل مع بطاريات حقيقية ومحولات لضمان الأداء الصحيح، والتحقق من أن التبديل بين الواجهات والشرائح لا يسبب مشاكل.
-    *   **اختبار تجربة المستخدم (UX Testing):** التأكد من سهولة الاستخدام ووضوح الواجهة، وأن الأبعاد الثابتة (600x800) لا تؤثر سلبًا على تجربة المستخدم.
+- **"Error Loading View"**: Check that all view files are present in the views/ directory
+- **"Failed to fetch"**: Ensure the HTTP server is running and accessible
+- **"Please select an adapter first"**: Choose an adapter from the dropdown before connecting
 
-**المخرجات:** برنامج مستقر، خالي من الأخطاء الرئيسية، ويوفر تجربة مستخدم جيدة، مع التحقق من فعالية فصل الطبقات.
+## Support
 
-### المرحلة 4.8: التوثيق والتسليم
+For technical support or questions about the Smart Battery Tool, please refer to the documentation or contact the development team.
 
-**الهدف:** توثيق الكود والوظائف، وإعداد البرنامج للتسليم.
+## License
 
-**الخطوات:**
+© 2025 Smart Battery Tool. All rights reserved.
 
-1.  **توثيق الكود:**
-    *   إضافة تعليقات واضحة ومنظمة للكود في كل من C# و JavaScript و HTML و CSS، مع التركيز على توضيح مسؤوليات كل طبقة وكيفية تفاعلها.
-    *   إنشاء ملف `README.md` محدث يشرح كيفية إعداد وتشغيل المشروع، مع تفصيل الهيكل المعماري للطبقات.
-2.  **توثيق المستخدم:**
-    *   إنشاء دليل مستخدم يشرح كيفية استخدام البرنامج، بما في ذلك الواجهات المختلفة والوظائف المتقدمة.
-3.  **إعداد حزمة التوزيع:**
-    *   تجميع ملفات البرنامج القابلة للتنفيذ (C#) وملفات الواجهة الأمامية (HTML/CSS/JS) في حزمة واحدة قابلة للتوزيع.
+---
 
-**المخرجات:** برنامج موثق بالكامل وجاهز للتسليم والاستخدام.
-
-## 5. الموارد المطلوبة
-
-*   **البرمجيات:** Visual Studio, Node.js (لأدوات الواجهة الأمامية إذا لزم الأمر).
-*   **الأجهزة:** محولات CP2112/EV2300، بطاريات ذكية للاختبار.
-*   **المهارات:** C#, HTML, CSS, JavaScript, فهم بروتوكولات الاتصال بالبطارية الذكية (SMBus/I2C), مبادئ تصميم البرمجيات (فصل الاهتمامات، الطبقات).
-
-## 6. الجدول الزمني (تقديري)
-
-*   **المرحلة 4.1 (إعداد الواجهة الخلفية):** 1-2 أسبوع
-*   **المرحلة 4.2 (بناء الغلاف وتكييفه):** 1-2 أسبوع
-*   **المرحلة 4.3 (واجهة Battery Info):** 1-2 أسبوع
-*   **المرحلة 4.4 (واجهة Advanced Tools):** 0.5-1 أسبوع
-*   **المرحلة 4.5 (تطوير واجهات التبويبات الجديدة):** 2-4 أسابيع (يعتمد على تعقيد كل واجهة)
-*   **المرحلة 4.6 (منطق الشرائح):** 1-2 أسبوع
-*   **المرحلة 4.7 (تحسين واختبار):** 1-2 أسبوع
-*   **المرحلة 4.8 (توثيق وتسليم):** 0.5-1 أسبوع
-
-**إجمالي الوقت التقديري:** 8 - 14 أسبوعًا (يعتمد على مدى تعقيد وظائف الشرائح وتوفر المكتبات).
-
-## 7. المخاطر المحتملة
-
-*   **عدم توفر وثائق كافية للمحولات/الشرائح:** قد يتطلب هندسة عكسية أو تجربة وخطأ.
-*   **مشاكل التوافق مع WebView2:** قد تظهر مشاكل في العرض أو الأداء تتطلب حلولًا مخصصة.
-*   **تعقيد منطق الشرائح:** بعض الشرائح قد تتطلب أوامر معقدة أو تسلسلات محددة لفك الحماية أو التعديل.
-*   **تحديات التصميم والتخطيط:** ضمان أن جميع عناصر الواجهة تتناسب بشكل جيد ضمن الأبعاد الثابتة 600x800 بكسل، خاصة مع إضافة تبويبات جديدة.
-*   **صعوبة تحقيق الفصل التام:** على الرغم من الجهود، قد تظهر بعض التبعيات الخفية بين الطبقات تتطلب معالجة دقيقة.
-
-## 8. الخطوات التالية
-
-قواعد أساسية يُلزم بها جميع المبرمجين في تطوير برنامج "مدير بيانات البطارية الذكية"ترقيم الإصدارات:
-
-رقم الإصدار الرئيسي (Version) يجب أن يظهر بشكل واضح داخل واجهة البرنامج (Splash, About, أو العنوان).
-
-يجب تضمين رقم الإصدار داخل كل ملف توثيق رئيسي، وفي رأس كل كود أساسي.
-
-اسم الملف التنفيذي للبرنامج (EXE أو أي صيغة أخرى) يجب أن يحتوي رقم الإصدار (مثال: SmartBatteryTool_v3.1.02.exe).
-
-لا يجوز حذف أو إخفاء رقم الإصدار أو الرجوع للوراء في الترقيم.
-
-ممنوع تمامًا كتابة أي كلمة أو سطر بالعربي داخل الأكواد
-جميع الأكواد تكون باللغة الإنجليزية فقط، لتقليل الأخطاء وسهولة الصيانة المستقبلية.
-
-يجب إرفاق باتش أو سكربت لتشغيل البرنامج مع كل إصدار
-سواء للتجارب أو للتشغيل العادي، ويكون موثّق في ملفات المشروع.
-
-إعداد ملفات توثيق (Documentation) لكل جزء في البرنامج حسب الحاجة
-ويُشترط تحديث كل الوثائق مع كل تحديث أو تعديل في الكود، وتضمين رقم الإصدار في كل وثيقة.
-
-كل وثيقة أو ملف يحتوي على رقم الإصدار الخاص به
-ويتم تحديث الرقم مع كل تغيير أو إضافة (مثلًا من 1.0 إلى 1.01 عند إصلاح خطأ بسيط، أو من 1.01 إلى 1.1 عند إضافة تحديث أو ميزة جديدة).
-
-قبل بدء أي تعديل أو تحديث
-يجب على المبرمج إرسال شرح مختصر لفهمه للتعديل المطلوب، وأخذ موافقة كتابية من الإدارة أو صاحب المشروع قبل التنفيذ.
-
-جميع التعليمات والقواعد السابقة يجب إدراجها وتحديثها باستمرار في ملفات التوثيق الرسمية
-لضمان اطلاع كل من يشارك في التطوير عليها والالتزام بها.
-
-الالتزام الصارم بفصل الطبقات البرمجية كما هو موضح في خطة التنفيذ
-
-كل طبقة (Back-end, API Bridge, Front-end, Chips Logic) يتم تطويرها واستقلالها تمامًا كما هو موضح في الخطة.
-
-أي كود جديد يجب أن يلتزم بهذا الفصل بشكل كامل دون دمج أي منطق طبقة مع أخرى.
-
-يمنع كليًا نقل منطق أو وظائف من طبقة لأخرى إلا من خلال الواجهات (APIs) المصرّح بها في الخطة.
-
-الالتزام بلغات البرمجة المحددة في خطة التنفيذ ولا يسمح بتغييرها أو خلطها إلا بموافقة مكتوبة
-
-Back-end: لغة #C (C#)
-
-API Bridge: JavaScript
-
-Front-end: HTML, CSS, JavaScript
-
-Chips Logic: JavaScript (ملفات مستقلة لكل شريحة)
-
-أي اقتراح بتغيير لغة أو إدخال أداة جديدة يُعرض أولاً لمراجعة الإدارة الفنية.
-
-لغة البرنامج
-جميع شاشات البرنامج، الرسائل، الواجهات، الوثائق، وأي محتوى ظاهر للمستخدم يكون باللغة الإنجليزية فقط.
-
-لا يُسمح باستخدام اللغة العربية أو أي لغة أخرى في أي جزء ظاهر للمستخدم، لضمان الاحترافية والتوافق مع السوق العالمي.
-الأبعاد الرسمية للبرنامج:
-جميع شاشات وواجهات البرنامج تكون بحجم 800 بكسل عرض × 600 بكسل ارتفاع (800×600)، لضمان عرض أفقي (Landscape) متوافق مع أجهزة الكمبيوتر.
+**Note**: This application is designed for professional battery monitoring and diagnostic purposes. Always follow proper safety procedures when working with battery systems.
 

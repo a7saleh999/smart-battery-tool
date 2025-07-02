@@ -1,0 +1,207 @@
+/* Smart Battery Tool - Calibration View Styles */
+/* Internal Version: 1 */
+/* Last Modified: June 30, 2025 */
+/* Author: Ahmed Saleh */
+
+.calibration-container {
+    padding: 20px;
+    max-width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.coming-soon {
+    text-align: center;
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 100%;
+}
+
+.coming-soon-icon {
+    margin-bottom: 20px;
+    color: #3182ce;
+}
+
+.coming-soon h2 {
+    font-size: 24px;
+    color: #2d3748;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.coming-soon p {
+    color: #718096;
+    font-size: 14px;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.feature-list {
+    text-align: left;
+}
+
+.feature-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.feature-list li {
+    padding: 8px 0;
+    color: #4a5568;
+    font-size: 13px;
+    position: relative;
+    padding-left: 20px;
+}
+
+.feature-list li:before {
+    content: "•";
+    color: #3182ce;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+/* Calibration Controls (for future implementation) */
+.calibration-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.calibration-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+}
+
+.calibration-card h3 {
+    font-size: 16px;
+    color: #2d3748;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.calibration-input-group {
+    margin-bottom: 15px;
+}
+
+.calibration-input-group label {
+    display: block;
+    font-size: 12px;
+    color: #4a5568;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.calibration-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.calibration-input:focus {
+    outline: none;
+    border-color: #3182ce;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+.calibration-btn {
+    background: #3182ce;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-right: 8px;
+}
+
+.calibration-btn:hover {
+    background: #2c5aa0;
+}
+
+.calibration-btn.secondary {
+    background: #718096;
+}
+
+.calibration-btn.secondary:hover {
+    background: #4a5568;
+}
+
+.calibration-btn.danger {
+    background: #e53e3e;
+}
+
+.calibration-btn.danger:hover {
+    background: #c53030;
+}
+
+.calibration-status {
+    margin-top: 10px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    text-align: center;
+}
+
+.calibration-status.success {
+    background: #c6f6d5;
+    color: #22543d;
+    border: 1px solid #9ae6b4;
+}
+
+.calibration-status.error {
+    background: #fed7d7;
+    color: #c53030;
+    border: 1px solid #feb2b2;
+}
+
+.calibration-status.info {
+    background: #bee3f8;
+    color: #2a69ac;
+    border: 1px solid #90cdf4;
+}
+
+/* Progress indicator */
+.calibration-progress {
+    width: 100%;
+    height: 4px;
+    background: #e2e8f0;
+    border-radius: 2px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+.calibration-progress-bar {
+    height: 100%;
+    background: #3182ce;
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+    .calibration-controls {
+        grid-template-columns: 1fr;
+    }
+    
+    .coming-soon {
+        padding: 30px 20px;
+        margin: 0 10px;
+    }
+}
+

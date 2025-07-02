@@ -1,0 +1,379 @@
+/* Advanced Tools Interface */
+.advanced-tools-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.tools-header {
+    text-align: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.tools-header h2 {
+    font-size: 18px;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.tools-header p {
+    font-size: 12px;
+    color: #7f8c8d;
+}
+
+.tools-layout {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 15px;
+    height: calc(100% - 80px);
+}
+
+/* Main Log Panel */
+.log-panel {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.main-log {
+    grid-row: 1 / 3;
+}
+
+.panel-header {
+    background: #f8f9fa;
+    padding: 10px 15px;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-header h3 {
+    font-size: 14px;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.log-controls {
+    display: flex;
+    gap: 5px;
+}
+
+.log-btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 4px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.log-btn:hover {
+    background: #2980b9;
+}
+
+.log-btn.clear {
+    background: #e74c3c;
+}
+
+.log-btn.clear:hover {
+    background: #c0392b;
+}
+
+.log-btn.save {
+    background: #27ae60;
+}
+
+.log-btn.save:hover {
+    background: #229954;
+}
+
+.log-btn.load {
+    background: #f39c12;
+}
+
+.log-btn.load:hover {
+    background: #e67e22;
+}
+
+.log-content {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.log-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #95a5a6;
+    text-align: center;
+}
+
+.log-placeholder svg {
+    margin-bottom: 10px;
+    opacity: 0.5;
+}
+
+.log-placeholder p {
+    margin: 0;
+    font-size: 12px;
+}
+
+.log-entry {
+    margin-bottom: 5px;
+    padding: 3px 5px;
+    border-radius: 3px;
+    display: flex;
+    gap: 10px;
+}
+
+.log-entry.info {
+    background: #e8f4fd;
+    border-left: 3px solid #3498db;
+}
+
+.log-entry.success {
+    background: #e8f5e8;
+    border-left: 3px solid #27ae60;
+}
+
+.log-entry.warning {
+    background: #fef9e7;
+    border-left: 3px solid #f39c12;
+}
+
+.log-entry.error {
+    background: #fdf2f2;
+    border-left: 3px solid #e74c3c;
+}
+
+.log-timestamp {
+    color: #7f8c8d;
+    font-weight: bold;
+    min-width: 70px;
+}
+
+.log-message {
+    flex: 1;
+    color: #2c3e50;
+}
+
+/* Functions Panel */
+.functions-panel {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.functions-panel h3 {
+    font-size: 14px;
+    color: #2c3e50;
+    margin: 0 0 10px 0;
+    text-align: center;
+}
+
+.function-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.function-btn {
+    background: #27ae60;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.function-btn:hover:not(:disabled) {
+    background: #229954;
+    transform: translateY(-1px);
+}
+
+.function-btn:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Memory Panel */
+.memory-panel {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.memory-controls {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.address-input {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 4px 6px;
+    font-size: 11px;
+    width: 100px;
+    font-family: 'Courier New', monospace;
+}
+
+.address-input:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+.address-input:disabled {
+    background: #f8f9fa;
+    color: #6c757d;
+}
+
+.memory-btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 4px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.memory-btn:hover:not(:disabled) {
+    background: #2980b9;
+}
+
+.memory-btn:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+}
+
+.memory-btn.read {
+    background: #27ae60;
+}
+
+.memory-btn.read:hover:not(:disabled) {
+    background: #229954;
+}
+
+.memory-content {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+}
+
+.memory-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #95a5a6;
+    text-align: center;
+}
+
+.memory-placeholder svg {
+    margin-bottom: 10px;
+    opacity: 0.5;
+}
+
+.memory-placeholder p {
+    margin: 0 0 5px 0;
+    font-size: 12px;
+}
+
+.memory-placeholder small {
+    font-size: 10px;
+    color: #bdc3c7;
+}
+
+.memory-display {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+.memory-header {
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 8px;
+    font-size: 12px;
+}
+
+.memory-hex {
+    color: #3498db;
+    margin-bottom: 5px;
+    word-break: break-all;
+}
+
+.memory-ascii {
+    color: #27ae60;
+    word-break: break-all;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 900px) {
+    .tools-layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: 2fr 1fr 1fr;
+    }
+    
+    .main-log {
+        grid-row: 1;
+    }
+}
+
+/* Scrollbar styling */
+.log-content::-webkit-scrollbar,
+.memory-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.log-content::-webkit-scrollbar-track,
+.memory-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.log-content::-webkit-scrollbar-thumb,
+.memory-content::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.log-content::-webkit-scrollbar-thumb:hover,
+.memory-content::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+

@@ -1,0 +1,114 @@
+<div class="battery-info-container">
+    <div class="info-grid">
+        <!-- Charge Status Card -->
+        <div class="info-card">
+            <div class="card-header">
+                <div class="card-icon charge-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                    </svg>
+                </div>
+                <h3>Charge Status</h3>
+            </div>
+            <div class="card-content">
+                <div class="main-value" id="charge-percentage">85%</div>
+                <div class="sub-value" id="charge-status">Charging</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 85%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Voltage & Current Card -->
+        <div class="info-card">
+            <div class="card-header">
+                <div class="card-icon voltage-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                    </svg>
+                </div>
+                <h3>Voltage & Current</h3>
+            </div>
+            <div class="card-content">
+                <div class="dual-values">
+                    <div class="value-item">
+                        <span class="value" id="voltage">12.6V</span>
+                        <span class="label">Voltage</span>
+                    </div>
+                    <div class="value-item">
+                        <span class="value" id="current">2.1A</span>
+                        <span class="label">Current</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Temperature Card -->
+        <div class="info-card">
+            <div class="card-header">
+                <div class="card-icon temp-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/>
+                    </svg>
+                </div>
+                <h3>Temperature</h3>
+            </div>
+            <div class="card-content">
+                <div class="main-value" id="temperature">32°C</div>
+                <div class="sub-value" id="temp-status">Normal</div>
+                <div class="temp-indicator">
+                    <div class="temp-bar">
+                        <div class="temp-fill" style="width: 40%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Battery Health Card -->
+        <div class="info-card">
+            <div class="card-header">
+                <div class="card-icon health-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                    </svg>
+                </div>
+                <h3>Battery Health</h3>
+            </div>
+            <div class="card-content">
+                <div class="main-value" id="health-percentage">92%</div>
+                <div class="sub-value" id="health-status">Good</div>
+                <div class="health-indicator">
+                    <div class="health-circle">
+                        <svg viewBox="0 0 36 36" class="circular-chart">
+                            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                            <path class="circle" stroke-dasharray="92, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <button class="action-btn primary" id="refresh-data">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                <path d="M21 3v5h-5"/>
+                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                <path d="M3 21v-5h5"/>
+            </svg>
+            Refresh Data
+        </button>
+        
+        <button class="action-btn secondary" id="export-data">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7,10 12,15 17,10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Export Data
+        </button>
+    </div>
+</div>
+
